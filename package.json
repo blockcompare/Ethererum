@@ -1,0 +1,25 @@
+{
+  "name": "ethereum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ethereum_api.js",
+  "dependencies": {
+    "express": "^4.16.2",
+    "mongodb": "^2.2.33",
+    "web3": "^1.0.0-beta.24"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blockcompare/Ethererum.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blockcompare/Ethererum/issues"
+  },
+  "homepage": "https://github.com/blockcompare/Ethererum#readme"
+}

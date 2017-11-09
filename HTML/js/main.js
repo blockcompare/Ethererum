@@ -1,4 +1,4 @@
-const SERVER_URL = 'http://140.112.18.193:8787/';
+const SERVER_URL = 'http://140.112.18.194:8787/';
 let a_id = '';
 
 function loadEvents(events) {

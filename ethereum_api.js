@@ -18,14 +18,14 @@ var express = require('express');
 var spawn = require('child_process').spawn;
 
 const NODE_IDENTITY = 'Node01';
-const BLOCK_DATA_DIR = '/home/pc193/ethereum/chain1/';
+const BLOCK_DATA_DIR = '/home/pc194/Ethereum/chain1/';
 const GETH_LISTEN_PORT = '30303';
-const RPC_PORT = '8545';
+const RPC_PORT = '8080';
 const RPC_URL = '127.0.0.1:' + RPC_PORT;
 const RPC_DOMAIN = '*';
 const RPC_API = 'db,eth,net,web3,personal';
 const NETWORK_ID = 196876;
-const ADMIN_ADDR = "0xcc0ca8be2b7b6dac72748cc213d611d2f0e5b624";
+const ADMIN_ADDR = "0xc725790de038b92573ea175c4b15c8c62d92df54";
 const ADMIN_PASSWD = "admin";
 const ACTIVE_TIME_LIMIT = 5 * 60 * 1000;
 const CHECK_ACTIVE_INTERVAL = ACTIVE_TIME_LIMIT / 2;
@@ -68,7 +68,7 @@ function startGeth() {
 		startGethCmd.removeListener('exit', () => {});
 	}, CMD_TIME_LIMIT);
 
-	web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
+	web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:' + RPC_PORT));
 }
 
 function startDB() {
@@ -113,7 +113,7 @@ function exitHandler(options, err) {
 }
 
 function startServer() {
-	console.log('Node-Express server is running at 140.112.18.193:8787 ');
+	console.log('Node-Express server is running at 140.112.18.194:8787 ');
 	app.use('/', express.static(__dirname + '/HTML'));
 	app.get('/create/', onCreate);
 	app.get('/login/', onLogin);
