@@ -26,6 +26,7 @@ const RPC_DOMAIN = '*';
 const RPC_API = 'db,eth,net,web3,personal';
 const NETWORK_ID = 196876;
 const ADMIN_ADDR = "0xc725790de038b92573ea175c4b15c8c62d92df54";
+const ADMIN_ID = "admin";
 const ADMIN_PASSWD = "admin";
 const ACTIVE_TIME_LIMIT = 5 * 60 * 1000;
 const CHECK_ACTIVE_INTERVAL = ACTIVE_TIME_LIMIT / 2;
@@ -87,6 +88,7 @@ function startDB() {
 		}
 		else {
 			account_collection = opened_collection;
+			checkAdminAccount();
 		}
 	});
 }
@@ -411,6 +413,44 @@ function onTransfer(req, resp) {
 
 
 //----------------------- Action Functions -----------------------//
+
+function checkAdminAccount() {
+	account_collection.findOne({ a_id: ADMIN_ID }, function(err, data) {
+		if (err) {
+			console.log("Error occur on query: " + err);
+			writeResponse(resp, { Success: false, Err: "Internal DB Error(query)"});
+			return;
+		}
+
+		if (data) {
+			/* Found this account => cannot create again */
+		} else {
+			/* Admin account not found => need to create */
+			console.log('Creating admin account...');
+			insertAdminAccount();
+		}
+	});
+}
+
+function insertAdminAccount() {
+	const admin_account = {
+		a_id: ADMIN_ID,
+		passwd: ADMIN_PASSWD || '',
+		address: ADMIN_ADDR,
+		user_ip: '',
+		isOnline: false,
+		last_active: new Date().getTime()
+	};
+
+	account_collection.insert(admin_account, function(err, data) {
+		if (err) {
+			console.log('Failed to insert admin account, Err: ' + err);
+		} else {
+			console.log('Successfully insert admin account: ');
+			printInfo(admin_account);
+		}
+	});
+}
 
 function createAccount(info, resp) {
 	var createRPC = {
