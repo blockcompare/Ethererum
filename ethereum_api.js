@@ -364,8 +364,13 @@ function onTransfer(req, resp) {
 							var to_addr = data.address;
 							/* Found this account => can transfer */
 							console.log('Try to transfer to account: ' + data.a_id);
-							transfer(from_addr, to_addr, req.query.amount, resp);
-							console.log('Transfer complete.');
+							unlockAccount(from_addr, data.passwd, () => {
+								transfer(from_addr, to_addr, req.query.amount, resp, () => {
+									console.log('Transfer complete.');
+									lockAccount(from_addr);
+								});
+							});
+							// transfer(from_addr, to_addr, req.query.amount, resp);
 						}
 						else {
 							/* Account not found => can' transfer */
