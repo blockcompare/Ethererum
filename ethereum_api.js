@@ -79,16 +79,15 @@ function startDB() {
 		}
 		else {
 			account_db = opened_db;
-		}
-	});
-
-	account_db.collection('account', function(err, opened_collection) {
-		if (err) {
-			console.log("Error occur on open collection: " + err);
-		}
-		else {
-			account_collection = opened_collection;
-			checkAdminAccount();
+	        account_db.collection('account', function(err, opened_collection) {
+		        if (err) {
+			        console.log("Error occur on open collection: " + err);
+		        }
+		        else {
+			        account_collection = opened_collection;
+                    checkAdminAccount();
+		        }
+	        });
 		}
 	});
 }
@@ -415,14 +414,11 @@ function onTransfer(req, resp) {
 //----------------------- Action Functions -----------------------//
 
 function checkAdminAccount() {
-	account_collection.findOne({ a_id: ADMIN_ID }, function(err, data) {
-		if (err) {
-			console.log("Error occur on query: " + err);
-			writeResponse(resp, { Success: false, Err: "Internal DB Error(query)"});
-			return;
-		}
-
+    console.log("Checking admin account...");
+    account_collection.findOne({a_id: ADMIN_ID}, function(err, data) {
 		if (data) {
+            console.log("Admin found.");
+            //printInfo(data);
 			/* Found this account => cannot create again */
 		} else {
 			/* Admin account not found => need to create */
@@ -560,11 +556,11 @@ function unlockAccount(address, passwd, callback) {
 	// }, CMD_TIME_LIMIT);
 }
 
-function lockAccount(account_data) {
+function lockAccount(address) {
 	var lockRPC = {
 		jsonrpc: '2.0',
 		method: 'personal_lockAccount',
-		params: [account_data.address],
+		params: [address],
 		id: 1
 	};
 	lockAccountCmd = spawn('curl', ['-X', 'POST', '--data', JSON.stringify(lockRPC), RPC_URL]);
@@ -627,7 +623,7 @@ function logoutAccount(account_data, resp) {
             return;
         } else {
             console.log('Successfully logout, locking account...');
-			lockAccount(account_data);
+			lockAccount(account_data.address);
             writeResponse(resp, { Success: true });
             return;
         }
@@ -665,8 +661,8 @@ function checkCurrentAccountBalance(addr, resp) {
 			writeResponse(resp, { Success: false, Err: "Geth error on checking balance" });
 		}
 		else {
-			console.log('Successfully get account balance.');
-			var balance = web3.fromWei(parseInt(data.result), 'ether');
+			console.log('Successfully get account balance: ' + data.result);
+			var balance = web3.utils.fromWei(data.result, 'ether');
 			writeResponse(resp, { Success: true, Balance: "" + balance });
 		}
 	});
@@ -693,7 +689,7 @@ function transfer(from_addr, to_addr, amount, resp, callback) {
 		params: [{
 			from: from_addr,
 			to: to_addr,
-			value: web3.fromDecimal(web3.toWei(parseFloat(amount), "ether"))
+			value: web3.utils.fromDecimal(web3.utils.toWei(parseFloat(amount), "ether"))
 		}],
 		id: 1
 	};
