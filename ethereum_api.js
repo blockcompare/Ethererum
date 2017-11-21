@@ -527,7 +527,7 @@ function loginAccount(info, account_data, resp) {
 }
 
 function unlockAccount(address, passwd, callback) {
-	var unlockRPC = {
+    var unlockRPC = {
 		jsonrpc: '2.0',
 		method: 'personal_unlockAccount',
 		params: [address, passwd],
@@ -539,7 +539,10 @@ function unlockAccount(address, passwd, callback) {
 		data = JSON.parse(data);
 		if (data.result !== true) {
 			console.log('Failed to unlock account, Err:' + JSON.stringify(data.error));
-		}
+		    if (callback) {
+                callback();
+            }
+        }
 		else {
 			console.log('Successfully unlock account.');
 			if (callback) {
