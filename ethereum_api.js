@@ -341,30 +341,31 @@ function onTransfer(req, resp) {
 		return;
 	}
 
-	account_collection.findOne({ a_id: req.query.a_id }, function(err, data) {
+	account_collection.findOne({ a_id: req.query.a_id }, function(err, from_account) {
 		if (err) {
 			console.log("Error occur on query: " + err);
 			writeResponse(resp, { Success: false, Err: "Internal DB Error(query)"});
 			return;
 		}
-		if (data) {
+		if (from_account) {
 			/* Found this account => check ip */
 			var curr_ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			console.log('Try to transfer from account: ' + data.a_id);
-			if (curr_ip === data.user_ip) {
-				if (data.isOnline === true) {
-					var from_addr = data.address;
-					account_collection.findOne({ a_id: req.query.to_id }, function(err, data) {
+			console.log('Try to transfer from account: ' + from_account.a_id);
+			if (curr_ip === from_account.user_ip) {
+				if (from_account.isOnline === true) {
+					var from_addr = from_account.address;
+					account_collection.findOne({ a_id: req.query.to_id }, function(err, to_account) {
 						if (err) {
 							console.log("Error occur on query: " + err);
 							writeResponse(resp, { Success: false, Err: "Internal DB Error(query)"});
 							return;
 						}
-						if (data) {
-							var to_addr = data.address;
+						if (to_account) {
+							var to_addr = to_account.address;
 							/* Found this account => can transfer */
-							console.log('Try to transfer to account: ' + data.a_id);
-							unlockAccount(from_addr, data.passwd, () => {
+							console.log('Try to transfer to account: ' + to_account.a_id);
+							unlockAccount(from_addr, from_account.passwd, () => {
+								console.log('Transferring...');
 								transfer(from_addr, to_addr, req.query.amount, resp, () => {
 									console.log('Transfer complete.');
 									lockAccount(from_addr);
